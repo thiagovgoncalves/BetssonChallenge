@@ -10,6 +10,8 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
@@ -67,6 +69,29 @@ public class checkoutStepDef {
         cart.sort(sort);
     }
 
+    @When("User click on a product")
+    public void userClickOnAProduct() throws InterruptedException {
+        // Localiza e clica no produto "Sauce Labs Backpack"
+        WebElement product = driver.findElement(
+                By.xpath("//android.widget.TextView[@content-desc='test-Item title' and @text='Sauce Labs Backpack']"));
+        product.click();
+        Thread.sleep(2000); // Pequeno delay para garantir que a navegação foi concluída
+    }
+
+    @Then("the wrong product is shown")
+    public void theWrongProductIsShown() {
+        // Localiza a imagem do produto na tela de detalhes
+        WebElement productImage = driver.findElement(
+                By.xpath("//android.view.ViewGroup[@content-desc='test-Image Container']/android.widget.ImageView"));
+
+        // Apenas valida que o elemento da imagem está presente na tela
+        if (productImage.isDisplayed()) {
+            System.out.println("Imagem do produto foi exibida corretamente.");
+        } else {
+            System.out.println("Erro: A imagem do produto não foi encontrada.");
+        }
+    }
+
     @When("User add cart product {string}")
     public void userAddCartProduct(String product) throws InterruptedException {
         Cart cart = new Cart(driver);
@@ -107,13 +132,27 @@ public class checkoutStepDef {
         Thread.sleep(2000);
     }
 
+    @Then("the error message {string} is displayed")
+    public void theErrorMessageIsDisplayed(String expectedMessage) throws InterruptedException {
+        WebElement errorMessageElement = driver
+                .findElement(AppiumBy.xpath("//android.widget.TextView[contains(@text, 'Sorry')]"));
 
-    public static UiAutomator2Options emulator(){
+        String actualMessage = errorMessageElement.getText();
+        System.out.println("Actual error message: " + actualMessage);
+
+        if (!actualMessage.equals(expectedMessage)) {
+            throw new AssertionError("Expected: " + expectedMessage + " but found: " + actualMessage);
+        }
+
+        ss.takeScreenshotWithResizedHeight("Error Message Displayed");
+    }
+
+    public static UiAutomator2Options emulator() {
         UiAutomator2Options options = new UiAutomator2Options();
         options.setPlatformName("Android");
         options.setAutomationName("UiAutomator2");
         options.setDeviceName("emulator-5554");
-//        options.setApp(System.getProperty("user.dir")+"/src/test/resources/apps/AndroidSauceLabsMobile.apk");
+        // options.setApp(System.getProperty("user.dir")+"/src/test/resources/apps/AndroidSauceLabsMobile.apk");
         options.setAppPackage("com.swaglabsmobileapp");
         options.setAppActivity("com.swaglabsmobileapp.SplashActivity");
         options.setNewCommandTimeout(Duration.ofMillis(300));
@@ -121,12 +160,12 @@ public class checkoutStepDef {
         return options;
     }
 
-    public static UiAutomator2Options oppoF9(){
+    public static UiAutomator2Options oppoF9() {
         UiAutomator2Options options = new UiAutomator2Options();
         options.setPlatformName("Android");
         options.setAutomationName("UiAutomator2");
         options.setDeviceName("RSFUNNSGMBW4U8GE");
-//        options.setApp(System.getProperty("user.dir")+"/src/test/resources/apps/AndroidSauceLabsMobile.apk");
+        // options.setApp(System.getProperty("user.dir")+"/src/test/resources/apps/AndroidSauceLabsMobile.apk");
         options.setAppPackage("com.swaglabsmobileapp");
         options.setAppActivity("com.swaglabsmobileapp.SplashActivity");
         options.setNewCommandTimeout(Duration.ofMillis(300));
@@ -137,7 +176,7 @@ public class checkoutStepDef {
     public static UiAutomator2Options getDeviceOptions(String deviceName) {
         switch (deviceName.toLowerCase()) {
             case "emulator":
-                return emulator(); 
+                return emulator();
             default:
                 throw new IllegalArgumentException("Device name not recognized: " + deviceName);
         }
@@ -158,7 +197,6 @@ public class checkoutStepDef {
         Thread.sleep(5000);
     }
 
-
     private static boolean isAppiumRunning() {
         try {
             Process process = Runtime.getRuntime().exec("tasklist");
@@ -175,7 +213,5 @@ public class checkoutStepDef {
         }
         return false;
     }
-
-
 
 }

@@ -30,7 +30,7 @@ public class simpleTest {
         options.setPlatformName("Android");
         options.setAutomationName("UiAutomator2");
         options.setDeviceName("emulator-5554");
-        options.setApp(System.getProperty("user.dir")+"/src/test/resources/apps/AndroidSauceLabsMobile.apk");
+        options.setApp(System.getProperty("user.dir")+"C:\\Users\\thiag\\OneDrive\\Desktop\\Thiago Gonçalves Betsson Test\\src\\test\\resources\\apps\\AndroidSauceLabsMobile.apk");
         options.setAppPackage("com.swaglabsmobileapp");
         options.setAppActivity("com.swaglabsmobileapp.SplashActivity");
         options.setNewCommandTimeout(Duration.ofMillis(300));
